@@ -13,11 +13,11 @@ type Task struct {
 	f     *fork.Fork
 }
 
-func NewTask() *Task {
+func NewTask(i int) *Task {
 	t := &Task{
 		queue: NewQueue(),
 		cha:   make(chan struct{}, 1),
-		f:     fork.NewFork(5),
+		f:     fork.NewFork(i),
 	}
 	go t.run()
 	return t

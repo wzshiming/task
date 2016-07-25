@@ -8,7 +8,7 @@ import (
 )
 
 func TestA(t *testing.T) {
-	task := NewTask()
+	task := NewTask(10)
 	rand.Seed(time.Now().UnixNano())
 	lll := 10000
 	ccc := make(chan bool, lll)
@@ -28,7 +28,7 @@ func TestA(t *testing.T) {
 }
 
 func TestB(t *testing.T) {
-	task := NewTask()
+	task := NewTask(10)
 	fmt.Println("000", time.Now())
 	task.AddPeriodic(PeriodicIntervalCount(time.Now().Add(time.Second*1), time.Second, 3), func() {
 		fmt.Println("111", time.Now())
