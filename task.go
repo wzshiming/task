@@ -1,7 +1,6 @@
 package task
 
 import (
-	"runtime"
 	"time"
 
 	"github.com/wzshiming/fork"
@@ -49,11 +48,15 @@ func (t *Task) AddPeriodic(perfunc func() time.Time, f func()) {
 	})
 }
 
+func (t *Task) sleep() {
+	t.Add(time.Now().Add(time.Hour), nil)
+}
+
 func (t *Task) run() {
 	for {
 		m := t.queue.DeleteMin()
 		if m == nil {
-			runtime.Gosched()
+			t.sleep()
 			continue
 		}
 		d := m.Time.Sub(time.Now())
@@ -61,7 +64,9 @@ func (t *Task) run() {
 		case <-t.cha:
 			t.queue.InsertAndSort(m)
 		case <-time.After(d):
-			t.f.Puah(m.fun)
+			if m.fun != nil {
+				t.f.Puah(m.fun)
+			}
 		}
 	}
 }
