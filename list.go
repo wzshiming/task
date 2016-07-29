@@ -22,11 +22,13 @@ func (qu *Queue) InsertAndSort(n *node) {
 	qu.l.InsertNoReplace(n)
 }
 
-func (qu *Queue) DeleteMin() *node {
+func (qu *Queue) DeleteMin() (n *node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
-	b, _ := qu.l.DeleteMin().(*node)
-	return b
+	for qu.l.Len() != 0 && n == nil {
+		n, _ = qu.l.DeleteMin().(*node)
+	}
+	return n
 }
 
 func (qu *Queue) Min() *node {

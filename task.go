@@ -70,3 +70,7 @@ func (t *Task) run() {
 		}
 	}
 }
+
+func (t *Task) Len() int {
+	return t.queue.Len()
+}
