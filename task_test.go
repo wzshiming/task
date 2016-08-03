@@ -35,5 +35,18 @@ func TestB(t *testing.T) {
 	})
 
 	time.Sleep(time.Second * 7)
+}
 
+func TestC(t *testing.T) {
+	task := NewTask(10)
+	fmt.Println("000", time.Now())
+	n := task.AddPeriodic(PeriodicIntervalCount(time.Now().Add(time.Second*1), time.Second, 3), func() {
+		fmt.Println("111", time.Now())
+	})
+	task.Add(time.Now().Add(time.Second*2), func() {
+		fmt.Println("close")
+		task.Close(n)
+	})
+
+	time.Sleep(time.Second * 7)
 }

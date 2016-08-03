@@ -5,24 +5,28 @@ import (
 	"sync"
 )
 
-type Queue struct {
+// 任务队列
+type List struct {
 	l   *llrb.LLRB
 	mut sync.RWMutex
 }
 
-func NewQueue() *Queue {
-	return &Queue{
+// 新的任务队列
+func NewList() *List {
+	return &List{
 		l: llrb.New(),
 	}
 }
 
-func (qu *Queue) InsertAndSort(n *node) {
+// 插入并排序
+func (qu *List) InsertAndSort(n *node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
 	qu.l.InsertNoReplace(n)
 }
 
-func (qu *Queue) DeleteMin() (n *node) {
+// 删除最小的
+func (qu *List) DeleteMin() (n *node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
 	for qu.l.Len() != 0 && n == nil {
@@ -31,14 +35,24 @@ func (qu *Queue) DeleteMin() (n *node) {
 	return n
 }
 
-func (qu *Queue) Min() *node {
+// 删除某个节点
+func (qu *List) Delete(n *node) *node {
+	qu.mut.Lock()
+	defer qu.mut.Unlock()
+	b, _ := qu.l.Delete(n).(*node)
+	return b
+}
+
+// 获取最小的
+func (qu *List) Min() *node {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
 	b, _ := qu.l.Min().(*node)
 	return b
 }
 
-func (qu *Queue) Len() int {
+// 长度
+func (qu *List) Len() int {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
 	return qu.l.Len()
