@@ -22,3 +22,10 @@ func PeriodicIntervalCount(start time.Time, interval time.Duration, count int) f
 		return now.Add(interval - sub%interval)
 	}
 }
+
+// 产生固定间隔的时间定时函数
+//  offset:   执行时间的偏移
+//  interval: 执行间隔
+func PeriodicInterval(offset time.Duration, interval time.Duration) func() time.Time {
+	return PeriodicIntervalCount(time.Unix(0, 0).Add(offset), interval, -1)
+}
