@@ -1,6 +1,7 @@
 package task
 
 import (
+	"fmt"
 	"llrb"
 	"time"
 	"unsafe"
@@ -8,8 +9,13 @@ import (
 
 // 任务节点
 type node struct {
-	tim time.Time
-	fun func()
+	time   time.Time
+	prefix func()
+	task   func()
+}
+
+func (no *node) String() string {
+	return fmt.Sprint(no.time, no.task)
 }
 
 // 小于
@@ -20,7 +26,7 @@ func (no *node) Less(i llrb.Item) bool {
 		if uintptr(unsafe.Pointer(no)) == uintptr(unsafe.Pointer(b)) {
 			return false
 		}
-		return no.tim.Before(b.tim) || no.tim.Equal(b.tim)
+		return !no.time.After(b.time)
 	default:
 		return false
 	}

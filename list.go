@@ -57,3 +57,18 @@ func (qu *List) Len() int {
 	defer qu.mut.RUnlock()
 	return qu.l.Len()
 }
+
+// 节点列表
+func (qu *List) List() []*node {
+	qu.mut.RLock()
+	defer qu.mut.RUnlock()
+	ns := make([]*node, 0, qu.l.Len())
+	qu.l.AscendGreaterOrEqual(llrb.Inf(-1), func(i llrb.Item) bool {
+		b, _ := i.(*node)
+		if b != nil {
+			ns = append(ns, b)
+		}
+		return true
+	})
+	return ns
+}
