@@ -6,6 +6,8 @@ import (
 	"github.com/wzshiming/fork"
 )
 
+var none = struct{}{}
+
 type Task struct {
 	fork  *fork.Fork    // 线程控制
 	queue *List         // 任务队列
@@ -37,7 +39,7 @@ func (t *Task) Join() {
 func (t *Task) Cancel(n *node) {
 	t.add(&node{
 		time: time.Unix(0, 0),
-		prefix: func() {
+		task: func() {
 			t.queue.Delete(n)
 		},
 	})
@@ -45,21 +47,30 @@ func (t *Task) Cancel(n *node) {
 
 // 任务加入队列
 func (t *Task) add(n *node) *node {
-	if len(t.iru) == 0 { // 判断管理线程是否运行 如果没有则启动
-		t.fork.Puah(t.run)
+	select { // 判断管理线程是否运行 如果没有则启动
+	case t.iru <- none:
+		t.fork.Puah(func() {
+			t.run()
+			<-t.iru
+		})
+	default:
 	}
-	t.queue.InsertAndSort(n)
-	if t.queue.Min() == n {
+
+	t.queue.InsertAndSort(n) // 队列里插入
+
+	if t.queue.Min() == n { // 如果插入到了第一个则刷新时间
 		t.flash()
 	}
 	return n
 }
 
 // 新的任务
-func (t *Task) Add(tim time.Time, f func()) *node {
+func (t *Task) Add(tim time.Time, task func()) *node {
 	return t.add(&node{
 		time: tim,
-		task: f,
+		task: func() {
+			t.fork.Puah(task)
+		},
 	})
 }
 
@@ -76,10 +87,10 @@ func (t *Task) addPeriodic(perfunc func() time.Time, n *node) *node {
 // 新的重复任务
 func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *node) {
 	n = &node{
-		prefix: func() {
+		task: func() {
 			t.addPeriodic(perfunc, n)
+			t.fork.Puah(task)
 		},
-		task: task,
 	}
 	return t.addPeriodic(perfunc, n)
 }
@@ -87,14 +98,21 @@ func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *node) {
 // 刷新第一个执行的任务
 func (t *Task) flash() {
 	select {
-	case t.ins <- struct{}{}:
+	case t.ins <- none:
+	default:
+	}
+}
+
+// 不刷新
+func (t *Task) unflash() {
+	select {
+	case <-t.ins:
 	default:
 	}
 }
 
 // 任务执行循环
 func (t *Task) run() {
-	t.iru <- struct{}{}
 	timer := time.NewTimer(time.Hour)
 	for {
 		n := t.queue.DeleteMin()
@@ -108,19 +126,12 @@ func (t *Task) run() {
 		timer.Reset(sub)              // 重置定时器
 		select {
 		case <-t.ins: // 有新的 任务节点插入
-			if n.task != nil {
-				t.queue.InsertAndSort(n)
-			}
+			t.queue.InsertAndSort(n)
 		case <-timer.C: // 到达最近执行的任务
-			if n.prefix != nil { // 前缀执行
-				n.prefix()
-			}
-			if n.task != nil {
-				t.fork.Puah(n.task)
-			}
+			n.task()
+			t.unflash()
 		}
 	}
-	<-t.iru
 }
 
 // 等待执行的任务数量 不算第一个
