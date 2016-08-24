@@ -1,6 +1,11 @@
 package task
 
-import "time"
+import (
+	"strings"
+	"time"
+)
+
+var unix0 = time.Date(1970, 1, 1, 0, 0, 0, 0, time.Local)
 
 // 产生固定间隔的时间定时函数
 //  start:    开始时间
@@ -27,5 +32,26 @@ func PeriodicIntervalCount(start time.Time, interval time.Duration, count int) f
 //  offset:   执行时间的偏移
 //  interval: 执行间隔
 func PeriodicInterval(offset time.Duration, interval time.Duration) func() time.Time {
-	return PeriodicIntervalCount(time.Unix(0, 0).Add(offset), interval, -1)
+	return PeriodicIntervalCount(unix0.Add(offset), interval, -1)
+}
+
+// 每天的 某个时间执行
+//  tim:
+//   15:04:05 或 15:04:05.999999999 每天的这个时候
+//   2006-01-02 15:04:05.999999999 从某个日期起 每天的这个时候
+func PeriodicEveryDay(tim string) func() time.Time {
+	errRet := func() time.Time { return time.Time{} }
+	sp := strings.SplitN(tim, " ", 2)
+	switch len(sp) {
+	case 1:
+		tim = "1970-01-01 " + tim
+	case 2:
+	default:
+		return errRet
+	}
+	t, err := time.ParseInLocation("2006-01-02 15:04:05.999999999", tim, time.Local)
+	if err != nil {
+		return errRet
+	}
+	return PeriodicIntervalCount(t, time.Hour*24, -1)
 }

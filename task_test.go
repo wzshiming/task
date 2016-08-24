@@ -57,3 +57,13 @@ func TestC(t *testing.T) {
 	})
 	task.Join()
 }
+
+//func TestD(t *testing.T) {
+//	task := NewTask(10)
+//	fmt.Println("begin", time.Now())
+//	n := task.AddPeriodic(PeriodicEveryDay("2008-01-03 09:53:00.5"), func() {
+//		fmt.Println("fork", time.Now())
+//	})
+//	fmt.Println(task.Len(), n)
+//	task.Join()
+//}
