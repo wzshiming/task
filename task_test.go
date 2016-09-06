@@ -54,3 +54,11 @@ func TestC(t *testing.T) {
 	})
 	Join()
 }
+
+func TestD(t *testing.T) {
+	fmt.Println("begin", time.Now())
+	AddPeriodic(PeriodicTiming(time.Now().Add(time.Second), time.Now()), func() {
+		fmt.Println("fork", time.Now())
+	})
+	Join()
+}

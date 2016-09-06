@@ -6,7 +6,11 @@ import (
 	"github.com/wzshiming/fork"
 )
 
-var none = struct{}{}
+var TaskExit = time.Time{} // 间隔任务退出 标识
+
+var unix0 = time.Date(1970, 1, 1, 0, 0, 0, 0, time.Local) // 标准零点
+
+var none = struct{}{} // 信号
 
 type Task struct {
 	fork  *fork.Fork    // 线程控制
@@ -76,6 +80,9 @@ func (t *Task) Add(tim time.Time, task func()) *node {
 
 // 重复任务加入队列
 func (t *Task) addPeriodic(perfunc func() time.Time, n *node) *node {
+	if perfunc == nil {
+		return nil
+	}
 	p := perfunc()
 	if p.IsZero() {
 		return nil
