@@ -158,9 +158,9 @@ func (t *Task) List() []*Node {
 
 // 打印出全部列表
 func (t *Task) Print() error {
-	sss := [][]string{{"FUNC", "NEXT", "NAME"}}
+	sss := [][]string{{"NAME", "FUNC", "NEXT"}}
 	for _, v := range t.List() {
-		sss = append(sss, []string{fmt.Sprint(v.Func()), v.Next().String(), v.Name()})
+		sss = append(sss, []string{v.Name(), fmt.Sprint(v.Func()), v.Next().String()})
 	}
 	ss := ffmt.FmtTable(sss)
 	_, err := fmt.Print(strings.Join(ss, "\n"), "\n")
