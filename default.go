@@ -28,6 +28,7 @@ func Join() {
 	Default.Join()
 }
 
+// 任务数量
 func Len() int {
 	return Default.Len()
 }

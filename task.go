@@ -53,7 +53,7 @@ func (t *Task) Cancel(n *node) {
 func (t *Task) add(n *node) *node {
 	select { // 判断管理线程是否运行 如果没有则启动
 	case t.iru <- none:
-		t.fork.Puah(func() {
+		t.fork.Push(func() {
 			t.run()
 			<-t.iru
 		})
@@ -73,7 +73,7 @@ func (t *Task) Add(tim time.Time, task func()) *node {
 	return t.add(&node{
 		time: tim,
 		task: func() {
-			t.fork.Puah(task)
+			t.fork.Push(task)
 		},
 	})
 }
@@ -96,7 +96,7 @@ func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *node) {
 	n = &node{
 		task: func() {
 			t.addPeriodic(perfunc, n)
-			t.fork.Puah(task)
+			t.fork.Push(task)
 		},
 	}
 	return t.addPeriodic(perfunc, n)
