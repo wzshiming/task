@@ -32,3 +32,13 @@ func Join() {
 func Len() int {
 	return Default.Len()
 }
+
+// 任务列表
+func List() []*Node {
+	return Default.List()
+}
+
+// 打印所有任务
+func Print() error {
+	return Default.Print()
+}

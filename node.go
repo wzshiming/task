@@ -10,6 +10,7 @@ import (
 type Node struct {
 	time time.Time
 	task func()
+	name string
 }
 
 func (no *Node) String() string {
@@ -24,6 +25,16 @@ func (no *Node) Func() func() {
 // 下次执行时间
 func (no *Node) Next() time.Time {
 	return no.time
+}
+
+// 设置名字
+func (no *Node) SetName(name string) {
+	no.name = name
+}
+
+// 名字
+func (no *Node) Name() string {
+	return no.name
 }
 
 // 小于

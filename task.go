@@ -1,8 +1,11 @@
 package task
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
+	"github.com/wzshiming/ffmt"
 	"github.com/wzshiming/fork"
 )
 
@@ -14,7 +17,7 @@ var none = struct{}{} // 信号
 
 type Task struct {
 	fork  *fork.Fork    // 线程控制
-	queue *List         // 任务队列
+	queue *list         // 任务队列
 	ins   chan struct{} // 插入新的任务的信号
 	iru   chan struct{} // 管理线程是否运行中的信号
 }
@@ -75,6 +78,7 @@ func (t *Task) Add(tim time.Time, task func()) *Node {
 		task: func() {
 			t.fork.Push(task)
 		},
+		name: ffmt.FMakeStack(1),
 	})
 }
 
@@ -98,6 +102,7 @@ func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
 			t.addPeriodic(perfunc, n)
 			t.fork.Push(task)
 		},
+		name: ffmt.FMakeStack(1),
 	}
 	return t.addPeriodic(perfunc, n)
 }
@@ -144,4 +149,20 @@ func (t *Task) run() {
 // 等待执行的任务数量 不算第一个
 func (t *Task) Len() int {
 	return t.queue.Len()
+}
+
+// 获取全部列表
+func (t *Task) List() []*Node {
+	return t.queue.List()
+}
+
+// 打印出全部列表
+func (t *Task) Print() error {
+	sss := [][]string{{"FUNC", "NEXT", "NAME"}}
+	for _, v := range t.List() {
+		sss = append(sss, []string{fmt.Sprint(v.Func()), v.Next().String(), v.Name()})
+	}
+	ss := ffmt.FmtTable(sss)
+	_, err := fmt.Print(strings.Join(ss, "\n"), "\n")
+	return err
 }

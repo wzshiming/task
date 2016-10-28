@@ -6,27 +6,27 @@ import (
 )
 
 // 任务队列
-type List struct {
+type list struct {
 	l   *llrb.LLRB
 	mut sync.RWMutex
 }
 
 // 新的任务队列
-func NewList() *List {
-	return &List{
+func NewList() *list {
+	return &list{
 		l: llrb.New(),
 	}
 }
 
 // 插入并排序
-func (qu *List) InsertAndSort(n *Node) {
+func (qu *list) InsertAndSort(n *Node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
 	qu.l.InsertNoReplace(n)
 }
 
 // 删除最小的
-func (qu *List) DeleteMin() (n *Node) {
+func (qu *list) DeleteMin() (n *Node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
 	for qu.l.Len() != 0 && n == nil {
@@ -36,7 +36,7 @@ func (qu *List) DeleteMin() (n *Node) {
 }
 
 // 删除某个节点
-func (qu *List) Delete(n *Node) *Node {
+func (qu *list) Delete(n *Node) *Node {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
 	b, _ := qu.l.Delete(n).(*Node)
@@ -44,7 +44,7 @@ func (qu *List) Delete(n *Node) *Node {
 }
 
 // 获取最小的
-func (qu *List) Min() *Node {
+func (qu *list) Min() *Node {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
 	b, _ := qu.l.Min().(*Node)
@@ -52,14 +52,14 @@ func (qu *List) Min() *Node {
 }
 
 // 长度
-func (qu *List) Len() int {
+func (qu *list) Len() int {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
 	return qu.l.Len()
 }
 
 // 节点列表
-func (qu *List) List() []*Node {
+func (qu *list) List() []*Node {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
 	ns := make([]*Node, 0, qu.l.Len())
