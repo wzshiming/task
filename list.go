@@ -19,35 +19,35 @@ func NewList() *List {
 }
 
 // 插入并排序
-func (qu *List) InsertAndSort(n *node) {
+func (qu *List) InsertAndSort(n *Node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
 	qu.l.InsertNoReplace(n)
 }
 
 // 删除最小的
-func (qu *List) DeleteMin() (n *node) {
+func (qu *List) DeleteMin() (n *Node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
 	for qu.l.Len() != 0 && n == nil {
-		n, _ = qu.l.DeleteMin().(*node)
+		n, _ = qu.l.DeleteMin().(*Node)
 	}
 	return n
 }
 
 // 删除某个节点
-func (qu *List) Delete(n *node) *node {
+func (qu *List) Delete(n *Node) *Node {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
-	b, _ := qu.l.Delete(n).(*node)
+	b, _ := qu.l.Delete(n).(*Node)
 	return b
 }
 
 // 获取最小的
-func (qu *List) Min() *node {
+func (qu *List) Min() *Node {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
-	b, _ := qu.l.Min().(*node)
+	b, _ := qu.l.Min().(*Node)
 	return b
 }
 
@@ -59,12 +59,12 @@ func (qu *List) Len() int {
 }
 
 // 节点列表
-func (qu *List) List() []*node {
+func (qu *List) List() []*Node {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
-	ns := make([]*node, 0, qu.l.Len())
+	ns := make([]*Node, 0, qu.l.Len())
 	qu.l.AscendGreaterOrEqual(llrb.Inf(-1), func(i llrb.Item) bool {
-		b, _ := i.(*node)
+		b, _ := i.(*Node)
 		if b != nil {
 			ns = append(ns, b)
 		}

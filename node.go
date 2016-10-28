@@ -7,30 +7,30 @@ import (
 )
 
 // 任务节点
-type node struct {
+type Node struct {
 	time time.Time
 	task func()
 }
 
-func (no *node) String() string {
+func (no *Node) String() string {
 	return fmt.Sprint(no.time)
 }
 
 // 执行的任务
-func (no *node) Func() func() {
+func (no *Node) Func() func() {
 	return no.task
 }
 
 // 下次执行时间
-func (no *node) Next() time.Time {
+func (no *Node) Next() time.Time {
 	return no.time
 }
 
 // 小于
-func (no *node) Less(i llrb.Item) bool {
+func (no *Node) Less(i llrb.Item) bool {
 	switch i.(type) {
-	case *node:
-		b := i.(*node)
+	case *Node:
+		b := i.(*Node)
 		return no != b && !no.time.After(b.time)
 	default:
 		return false

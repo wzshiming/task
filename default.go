@@ -9,17 +9,17 @@ import (
 var Default = NewTask(runtime.NumCPU() + 2)
 
 // 添加单次定时任务
-func Add(tim time.Time, task func()) (n *node) {
+func Add(tim time.Time, task func()) (n *Node) {
 	return Default.Add(tim, task)
 }
 
 // 添加间隔时间任务
-func AddPeriodic(perfunc func() time.Time, task func()) (n *node) {
+func AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
 	return Default.AddPeriodic(perfunc, task)
 }
 
 // 取消任务
-func Cancel(n *node) {
+func Cancel(n *Node) {
 	Default.Cancel(n)
 }
 

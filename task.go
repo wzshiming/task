@@ -40,8 +40,8 @@ func (t *Task) Join() {
 }
 
 // 取消任务
-func (t *Task) Cancel(n *node) {
-	t.add(&node{
+func (t *Task) Cancel(n *Node) {
+	t.add(&Node{
 		time: time.Unix(0, 0),
 		task: func() {
 			t.queue.Delete(n)
@@ -50,7 +50,7 @@ func (t *Task) Cancel(n *node) {
 }
 
 // 任务加入队列
-func (t *Task) add(n *node) *node {
+func (t *Task) add(n *Node) *Node {
 	select { // 判断管理线程是否运行 如果没有则启动
 	case t.iru <- none:
 		t.fork.Push(func() {
@@ -69,8 +69,8 @@ func (t *Task) add(n *node) *node {
 }
 
 // 新的任务
-func (t *Task) Add(tim time.Time, task func()) *node {
-	return t.add(&node{
+func (t *Task) Add(tim time.Time, task func()) *Node {
+	return t.add(&Node{
 		time: tim,
 		task: func() {
 			t.fork.Push(task)
@@ -79,7 +79,7 @@ func (t *Task) Add(tim time.Time, task func()) *node {
 }
 
 // 重复任务加入队列
-func (t *Task) addPeriodic(perfunc func() time.Time, n *node) *node {
+func (t *Task) addPeriodic(perfunc func() time.Time, n *Node) *Node {
 	if perfunc == nil {
 		return nil
 	}
@@ -92,8 +92,8 @@ func (t *Task) addPeriodic(perfunc func() time.Time, n *node) *node {
 }
 
 // 新的重复任务
-func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *node) {
-	n = &node{
+func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
+	n = &Node{
 		task: func() {
 			t.addPeriodic(perfunc, n)
 			t.fork.Push(task)
