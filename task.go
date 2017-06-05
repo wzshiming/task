@@ -18,6 +18,7 @@ var none = struct{}{} // 信号
 type Task struct {
 	fork  *fork.Fork    // 线程控制
 	queue *list         // 任务队列
+	curr  *Node         // 当前等待的
 	ins   chan struct{} // 插入新的任务的信号
 	iru   chan struct{} // 管理线程是否运行中的信号
 }
@@ -127,32 +128,39 @@ func (t *Task) unflash() {
 func (t *Task) run() {
 	timer := time.NewTimer(time.Hour)
 	for {
-		n := t.queue.DeleteMin()
-		if n == nil { // 如果没有任务了 结束线程
+		t.curr = t.queue.DeleteMin()
+		if t.curr == nil { // 如果没有任务了 结束线程
 			if t.Len() == 0 {
 				break
 			}
 			continue
 		}
-		sub := n.time.Sub(time.Now()) // 计算 休眠时长
-		timer.Reset(sub)              // 重置定时器
+		sub := t.curr.time.Sub(time.Now()) // 计算 休眠时长
+		timer.Reset(sub)                   // 重置定时器
 		select {
 		case <-t.ins: // 有新的 任务节点插入
-			t.queue.InsertAndSort(n)
+			t.queue.InsertAndSort(t.curr)
 		case <-timer.C: // 到达最近执行的任务
-			n.task()
+			t.curr.task()
 			t.unflash()
 		}
 	}
 }
 
-// 等待执行的任务数量 不算第一个
+// 等待执行的任务数量
 func (t *Task) Len() int {
-	return t.queue.Len()
+	b := 0
+	if t.curr != nil {
+		b++
+	}
+	return t.queue.Len() + b
 }
 
 // 获取全部列表
 func (t *Task) List() []*Node {
+	if t.curr != nil {
+		return append([]*Node{t.curr}, t.queue.List()...)
+	}
 	return t.queue.List()
 }
 

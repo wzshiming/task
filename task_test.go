@@ -17,7 +17,7 @@ func TestA(t *testing.T) {
 		d := time.Millisecond * time.Duration(v)
 
 		Add(time.Now().Add(d), func() {
-			fmt.Println("hello", d)
+			fmt.Println("hello", d, Default.Len())
 			ccc <- true
 		})
 		//}()
@@ -29,7 +29,7 @@ func TestA(t *testing.T) {
 func TestB(t *testing.T) {
 	fmt.Println("begin", time.Now())
 	AddPeriodic(PeriodicIntervalCount(time.Now(), time.Second/10, 50), func() {
-		fmt.Println("fork", time.Now())
+		fmt.Println("fork", time.Now(), Default.Len())
 	})
 	Join()
 }
@@ -37,7 +37,7 @@ func TestB(t *testing.T) {
 func TestC(t *testing.T) {
 	fmt.Println("begin", time.Now())
 	n := AddPeriodic(PeriodicIntervalCount(time.Now(), time.Second, 5), func() {
-		fmt.Println("fork", time.Now())
+		fmt.Println("fork", time.Now(), Default.Len())
 	})
 	Add(time.Now().Add(time.Second*2), func() {
 		Cancel(n)
@@ -46,11 +46,11 @@ func TestC(t *testing.T) {
 	Join()
 	fmt.Println("begin", time.Now())
 	n = AddPeriodic(PeriodicIntervalCount(time.Now(), time.Second, 5), func() {
-		fmt.Println("fork", time.Now())
+		fmt.Println("fork", time.Now(), Default.Len())
 	})
 	Add(time.Now().Add(time.Second*2), func() {
 		Cancel(n)
-		fmt.Println("close", time.Now())
+		fmt.Println("close", time.Now(), Default.Len())
 	})
 	Join()
 }
