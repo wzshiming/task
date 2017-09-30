@@ -53,6 +53,13 @@ func (t *Task) Cancel(n *Node) {
 	})
 }
 
+// 取消全部任务
+func (t *Task) CancelAll(n *Node) {
+	for _, v := range t.List() {
+		t.Cancel(v)
+	}
+}
+
 // 任务加入队列
 func (t *Task) add(n *Node) *Node {
 	select { // 判断管理线程是否运行 如果没有则启动
