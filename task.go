@@ -54,7 +54,7 @@ func (t *Task) Cancel(n *Node) {
 }
 
 // 取消全部任务
-func (t *Task) CancelAll(n *Node) {
+func (t *Task) CancelAll() {
 	for _, v := range t.List() {
 		t.Cancel(v)
 	}
