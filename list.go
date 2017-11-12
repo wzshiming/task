@@ -1,8 +1,9 @@
 package task
 
 import (
-	"llrb"
 	"sync"
+
+	"github.com/petar/GoLLRB/llrb"
 )
 
 // 任务队列

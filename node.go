@@ -2,8 +2,9 @@ package task
 
 import (
 	"fmt"
-	"llrb"
 	"time"
+
+	"github.com/petar/GoLLRB/llrb"
 )
 
 // 任务节点
