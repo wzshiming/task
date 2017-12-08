@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/wzshiming/ffmt"
+	"gopkg.in/ffmt.v1"
 )
 
 func TestSpacing(t *testing.T) {

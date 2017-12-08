@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/wzshiming/ffmt"
 	"github.com/wzshiming/fork"
+	"gopkg.in/ffmt.v1"
 )
 
 var TaskExit = time.Time{} // 间隔任务退出 标识
