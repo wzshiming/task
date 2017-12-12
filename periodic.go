@@ -18,7 +18,7 @@ func PeriodicIntervalCount(start time.Time, interval time.Duration, count int) f
 	return func() time.Time {
 		now := time.Now()
 		sub := now.Sub(start)
-		if count >= 0 && sub/interval+1 >= time.Duration(count) {
+		if count >= 0 && int(sub/interval) >= count {
 			return TaskExit
 		}
 		if start.After(now) {

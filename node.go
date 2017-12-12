@@ -40,9 +40,8 @@ func (no *Node) Name() string {
 
 // 小于
 func (no *Node) Less(i llrb.Item) bool {
-	switch i.(type) {
+	switch b := i.(type) {
 	case *Node:
-		b := i.(*Node)
 		return no != b && !no.time.After(b.time)
 	default:
 		return false
