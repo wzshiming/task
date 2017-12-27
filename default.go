@@ -5,40 +5,40 @@ import (
 	"time"
 )
 
-// 全局默认任务管理
+// Default
 var Default = NewTask(runtime.NumCPU() + 2)
 
-// 添加单次定时任务
+// Add The specified time to execute
 func Add(tim time.Time, task func()) (n *Node) {
 	return Default.Add(tim, task)
 }
 
-// 添加间隔时间任务
+// AddPeriodic Periodic execution
 func AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
 	return Default.AddPeriodic(perfunc, task)
 }
 
-// 取消任务
+// Cancel
 func Cancel(n *Node) {
 	Default.Cancel(n)
 }
 
-// 等待任务结束
+// Join Waiting for all tasks to finish
 func Join() {
 	Default.Join()
 }
 
-// 任务数量
+// Len
 func Len() int {
 	return Default.Len()
 }
 
-// 任务列表
+// List
 func List() []*Node {
 	return Default.List()
 }
 
-// 打印所有任务
+// Print
 func Print() error {
 	return Default.Print()
 }

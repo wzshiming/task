@@ -9,21 +9,21 @@ import (
 	"gopkg.in/ffmt.v1"
 )
 
-var TaskExit = time.Time{} // 间隔任务退出 标识
+var TaskExit = time.Time{} // exit time
 
-var unix0 = time.Date(1970, 1, 1, 0, 0, 0, 0, time.Local) // 标准零点
+var unix0 = time.Date(1970, 1, 1, 0, 0, 0, 0, time.Local) // unix 0
 
-var none = struct{}{} // 信号
+var none = struct{}{} // signal
 
 type Task struct {
-	fork  *fork.Fork    // 线程控制
-	queue *list         // 任务队列
-	curr  *Node         // 当前等待的
-	ins   chan struct{} // 插入新的任务的信号
-	iru   chan struct{} // 管理线程是否运行中的信号
+	fork  *fork.Fork    // maximum thread control
+	queue *list         // task queue
+	curr  *Node         // currently waiting
+	ins   chan struct{} // inserts signal
+	iru   chan struct{} // is working
 }
 
-// 任务管理
+// NewTask
 //  i: 线程数 最低为 1个线程
 func NewTask(i int) *Task {
 	if i < 1 {
@@ -38,12 +38,12 @@ func NewTask(i int) *Task {
 	}
 }
 
-// 直到 当前所有任务 完结
+// Join Waiting for all tasks to finish
 func (t *Task) Join() {
 	t.fork.Join()
 }
 
-// 取消任务
+// Cancel
 func (t *Task) Cancel(n *Node) {
 	t.add(&Node{
 		time: time.Unix(0, 0),
@@ -53,13 +53,13 @@ func (t *Task) Cancel(n *Node) {
 	})
 }
 
-// 取消全部任务
+// CancelAll Cancel all tasks
 func (t *Task) CancelAll() {
 	t.flash()
 	t.queue = NewList()
 }
 
-// 任务加入队列
+// add
 func (t *Task) add(n *Node) *Node {
 	select { // 判断管理线程是否运行 如果没有则启动
 	case t.iru <- none:
@@ -78,7 +78,7 @@ func (t *Task) add(n *Node) *Node {
 	return n
 }
 
-// 新的任务
+// Add The specified time to execute
 func (t *Task) Add(tim time.Time, task func()) *Node {
 	return t.add(&Node{
 		time: tim,
@@ -89,7 +89,7 @@ func (t *Task) Add(tim time.Time, task func()) *Node {
 	})
 }
 
-// 重复任务加入队列
+// addPeriodic
 func (t *Task) addPeriodic(perfunc func() time.Time, n *Node) *Node {
 	if perfunc == nil {
 		return nil
@@ -102,7 +102,7 @@ func (t *Task) addPeriodic(perfunc func() time.Time, n *Node) *Node {
 	return t.add(n)
 }
 
-// 新的重复任务
+// AddPeriodic Periodic execution
 func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
 	n = &Node{
 		task: func() {
@@ -114,7 +114,7 @@ func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
 	return t.addPeriodic(perfunc, n)
 }
 
-// 刷新第一个执行的任务
+// flash Reset the first task
 func (t *Task) flash() {
 	select {
 	case t.ins <- none:
@@ -122,7 +122,7 @@ func (t *Task) flash() {
 	}
 }
 
-// 不刷新
+// unflash
 func (t *Task) unflash() {
 	select {
 	case <-t.ins:
@@ -130,7 +130,7 @@ func (t *Task) unflash() {
 	}
 }
 
-// 任务执行循环
+// run
 func (t *Task) run() {
 	timer := time.NewTimer(time.Hour)
 	for {
@@ -153,7 +153,7 @@ func (t *Task) run() {
 	}
 }
 
-// 等待执行的任务数量
+// Len
 func (t *Task) Len() int {
 	b := 0
 	if t.curr != nil {
@@ -162,7 +162,7 @@ func (t *Task) Len() int {
 	return t.queue.Len() + b
 }
 
-// 获取全部列表
+// List
 func (t *Task) List() []*Node {
 	if t.curr != nil {
 		return append([]*Node{t.curr}, t.queue.List()...)
@@ -170,7 +170,7 @@ func (t *Task) List() []*Node {
 	return t.queue.List()
 }
 
-// 打印出全部列表
+// Print
 func (t *Task) Print() error {
 	sss := [][]string{{"NAME", "NEXT"}}
 	for _, v := range t.List() {
