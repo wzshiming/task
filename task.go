@@ -61,19 +61,17 @@ func (t *Task) CancelAll() {
 
 // add
 func (t *Task) add(n *Node) *Node {
-	select { // 判断管理线程是否运行 如果没有则启动
-	case t.iru <- none:
-		t.fork.Push(func() {
-			t.run()
-			<-t.iru
-		})
-	default:
-	}
 
 	t.queue.InsertAndSort(n) // 队列里插入
 
 	if t.queue.Min() == n { // 如果插入到了第一个则刷新时间
 		t.flash()
+	}
+
+	select { // 判断管理线程是否运行 如果没有则启动
+	case t.iru <- none:
+		t.fork.Push(t.run)
+	default:
 	}
 	return n
 }
@@ -142,7 +140,11 @@ func (t *Task) run() {
 			continue
 		}
 		sub := t.curr.time.Sub(time.Now()) // 计算 休眠时长
-		timer.Reset(sub)                   // 重置定时器
+		if sub <= 0 {                      // 马上执行的
+			t.curr.task()
+			continue
+		}
+		timer.Reset(sub) // 重置定时器
 		select {
 		case <-t.ins: // 有新的 任务节点插入
 			t.queue.InsertAndSort(t.curr)
@@ -151,6 +153,7 @@ func (t *Task) run() {
 			t.unflash()
 		}
 	}
+	<-t.iru
 }
 
 // Len
