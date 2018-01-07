@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/wzshiming/fork"
+	"gopkg.in/wzshiming/fork.v2"
 	"gopkg.in/ffmt.v1"
 )
 
