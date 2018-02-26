@@ -1,4 +1,4 @@
-package task
+package task // import "gopkg.in/wzshiming/task.v2"
 
 import (
 	"fmt"
