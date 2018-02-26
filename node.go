@@ -15,7 +15,7 @@ type Node struct {
 }
 
 func (no *Node) String() string {
-	return fmt.Sprint(no.time)
+	return fmt.Sprintf("%v %v", no.time, no.name)
 }
 
 // 执行的任务

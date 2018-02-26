@@ -2,11 +2,9 @@ package task
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
-	"gopkg.in/wzshiming/fork.v2"
-	"gopkg.in/ffmt.v1"
+	fork "gopkg.in/wzshiming/fork.v2"
 )
 
 var TaskExit = time.Time{} // exit time
@@ -83,7 +81,7 @@ func (t *Task) Add(tim time.Time, task func()) *Node {
 		task: func() {
 			t.fork.Push(task)
 		},
-		name: ffmt.FMakeStack(1),
+		name: fmt.Sprint(task),
 	})
 }
 
@@ -107,7 +105,7 @@ func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
 			t.addPeriodic(perfunc, n)
 			t.fork.Push(task)
 		},
-		name: ffmt.FMakeStack(1),
+		name: fmt.Sprint(task),
 	}
 	return t.addPeriodic(perfunc, n)
 }
@@ -174,12 +172,8 @@ func (t *Task) List() []*Node {
 }
 
 // Print
-func (t *Task) Print() error {
-	sss := [][]string{{"NAME", "NEXT"}}
+func (t *Task) Print() {
 	for _, v := range t.List() {
-		sss = append(sss, []string{v.Name(), v.Next().String()})
+		fmt.Printf(v.String())
 	}
-	ss := ffmt.FmtTable(sss)
-	_, err := fmt.Print(strings.Join(ss, "\n"), "\n")
-	return err
 }

@@ -39,6 +39,6 @@ func List() []*Node {
 }
 
 // Print
-func Print() error {
-	return Default.Print()
+func Print() {
+	Default.Print()
 }
