@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/petar/GoLLRB/llrb"
+	"github.com/wzshiming/llrb"
 )
 
 // 任务节点

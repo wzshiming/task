@@ -81,7 +81,7 @@ func (t *Task) Add(tim time.Time, task func()) *Node {
 		task: func() {
 			t.fork.Push(task)
 		},
-		name: fmt.Sprint(task),
+		name: time.Now().Format(time.RFC3339),
 	})
 }
 
@@ -105,7 +105,7 @@ func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
 			t.addPeriodic(perfunc, n)
 			t.fork.Push(task)
 		},
-		name: fmt.Sprint(task),
+		name: time.Now().Format(time.RFC3339),
 	}
 	return t.addPeriodic(perfunc, n)
 }

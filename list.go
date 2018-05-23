@@ -3,7 +3,7 @@ package task
 import (
 	"sync"
 
-	"github.com/petar/GoLLRB/llrb"
+	"github.com/wzshiming/llrb"
 )
 
 // 任务队列
