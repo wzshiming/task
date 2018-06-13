@@ -7,38 +7,39 @@ import (
 	"github.com/wzshiming/llrb"
 )
 
-// 任务节点
+// Node is store tasks
 type Node struct {
 	time time.Time
 	task func()
 	name string
 }
 
+// String returns strings
 func (no *Node) String() string {
 	return fmt.Sprintf("%v %v", no.time, no.name)
 }
 
-// 执行的任务
+// Func returns tasks function
 func (no *Node) Func() func() {
 	return no.task
 }
 
-// 下次执行时间
+// Next returns next time
 func (no *Node) Next() time.Time {
 	return no.time
 }
 
-// 设置名字
+// SetName sets node name
 func (no *Node) SetName(name string) {
 	no.name = name
 }
 
-// 名字
+// Name returns the node name
 func (no *Node) Name() string {
 	return no.name
 }
 
-// 小于
+// Less returns compare the time with another node
 func (no *Node) Less(i llrb.Item) bool {
 	switch b := i.(type) {
 	case *Node:

@@ -1,10 +1,10 @@
-package task // import "gopkg.in/wzshiming/task.v2"
+package task
 
 import (
 	"fmt"
 	"time"
 
-	fork "gopkg.in/wzshiming/fork.v2"
+	"github.com/wzshiming/fork"
 )
 
 var TaskExit = time.Time{} // exit time
@@ -21,8 +21,7 @@ type Task struct {
 	iru   chan struct{} // is working
 }
 
-// NewTask
-//  i: 线程数 最低为 1个线程
+// NewTask create a new task that specifies the maximum number of fork
 func NewTask(i int) *Task {
 	if i < 1 {
 		i = 1
@@ -60,13 +59,13 @@ func (t *Task) CancelAll() {
 // add
 func (t *Task) add(n *Node) *Node {
 
-	t.queue.InsertAndSort(n) // 队列里插入
+	t.queue.InsertAndSort(n)
 
-	if t.queue.Min() == n { // 如果插入到了第一个则刷新时间
+	if t.queue.Min() == n { // Refresh time if the first one is inserted
 		t.flash()
 	}
 
-	select { // 判断管理线程是否运行 如果没有则启动
+	select { // Start the administrative thread if it doesn't start
 	case t.iru <- none:
 		t.fork.Push(t.run)
 	default:
@@ -131,22 +130,22 @@ func (t *Task) run() {
 	timer := time.NewTimer(time.Hour)
 	for {
 		t.curr = t.queue.DeleteMin()
-		if t.curr == nil { // 如果没有任务了 结束线程
+		if t.curr == nil { // End the thread if there are no tasks
 			if t.Len() == 0 {
 				break
 			}
 			continue
 		}
-		sub := t.curr.time.Sub(time.Now()) // 计算 休眠时长
-		if sub <= 0 {                      // 马上执行的
+		sub := t.curr.time.Sub(time.Now()) // Calculate sleep duration
+		if sub <= 0 {                      // immediate
 			t.curr.task()
 			continue
 		}
-		timer.Reset(sub) // 重置定时器
+		timer.Reset(sub) // Reset timer
 		select {
-		case <-t.ins: // 有新的 任务节点插入
+		case <-t.ins: // A new task node is inserted
 			t.queue.InsertAndSort(t.curr)
-		case <-timer.C: // 到达最近执行的任务
+		case <-timer.C: // Arrive at the recently executed task
 			t.curr.task()
 			t.unflash()
 		}
@@ -154,7 +153,7 @@ func (t *Task) run() {
 	<-t.iru
 }
 
-// Len
+// Len returns the number of task
 func (t *Task) Len() int {
 	b := 0
 	if t.curr != nil {
@@ -163,7 +162,7 @@ func (t *Task) Len() int {
 	return t.queue.Len() + b
 }
 
-// List
+// List returns task list
 func (t *Task) List() []*Node {
 	if t.curr != nil {
 		return append([]*Node{t.curr}, t.queue.List()...)
@@ -171,7 +170,7 @@ func (t *Task) List() []*Node {
 	return t.queue.List()
 }
 
-// Print
+// Print task list
 func (t *Task) Print() {
 	for _, v := range t.List() {
 		fmt.Printf(v.String())

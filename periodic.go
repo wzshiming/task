@@ -6,12 +6,9 @@ import (
 	"time"
 )
 
-// 产生固定间隔的时间定时函数
-//  start:    开始时间
-//  interval: 执行间隔
-//  count:    执行次数 如果 -1 则不限制次数
+// PeriodicIntervalCount is generates a fixed interval time function
 func PeriodicIntervalCount(start time.Time, interval time.Duration, count int) func() time.Time {
-	// 开始时间 未初始化 则设置为 标准零点
+	// If the start time is not initialized, it is set to standard zero
 	if start.IsZero() {
 		start = time.Unix(0, 0)
 	}
@@ -28,18 +25,13 @@ func PeriodicIntervalCount(start time.Time, interval time.Duration, count int) f
 	}
 }
 
-// 产生固定间隔的时间定时函数
-//  offset:   执行时间的偏移
-//  interval: 执行间隔
+// PeriodicInterval is generates a fixed interval time function, unlimited number of times
 func PeriodicInterval(offset time.Duration, interval time.Duration) func() time.Time {
 	return PeriodicIntervalCount(unix0.Add(offset), interval, -1)
 }
 
-// 每天的 某个时间执行
-//  tim:
-//   15:04:05 或 15:04:05.999999999 每天的这个时候
-//   2006-01-02 15:04:05.999999999 从某个日期起 每天的这个时候
-func ParseTimeDay(tim string) time.Time {
+// parseTimeDay is parse fixed time
+func parseTimeDay(tim string) time.Time {
 	sp := strings.SplitN(tim, " ", 2)
 	switch len(sp) {
 	case 1:
@@ -55,10 +47,9 @@ func ParseTimeDay(tim string) time.Time {
 	return t
 }
 
-// 每天的 某个时间执行
-//  tim:
-//   15:04:05 或 15:04:05.999999999 每天的这个时候
-//   2006-01-02 15:04:05.999999999 从某个日期起 每天的这个时候
+// PeriodicEveryDay is a fixed time of day
+//   15:04:05 of 15:04:05.999999999 This time of day
+//   2006-01-02 15:04:05.999999999 This time of day from a certain date
 func PeriodicEveryDay(tim string) func() time.Time {
 	t := ParseTimeDay(tim)
 	if t == TaskExit {
@@ -67,7 +58,7 @@ func PeriodicEveryDay(tim string) func() time.Time {
 	return PeriodicIntervalCount(t, time.Hour*24, -1)
 }
 
-// 按近到远排序时间
+// TimeSlice sorted from near to far
 type TimeSlice []time.Time
 
 func (p TimeSlice) Len() int           { return len(p) }
@@ -75,13 +66,12 @@ func (p TimeSlice) Less(i, j int) bool { return p[i].Before(p[j]) }
 func (p TimeSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 func (p TimeSlice) Sort()              { sort.Sort(p) }
 
-// 产生固定间隔的时间定时函数
-//  ts: 指定多个执行的时间
+// PeriodicTiming is multiple time for execution
 func PeriodicTiming(ts ...time.Time) func() time.Time {
 	now := time.Now()
-	// 排序执行的时间
+	// sorted from near to far
 	TimeSlice(ts).Sort()
-	// 移除已经超过的时间
+	// remove time that has expired
 	for _, v := range ts {
 		if !v.Before(now) {
 			break

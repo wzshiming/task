@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// 最短执行间隔
+// Spacing is interval to perform
 type Spacing struct {
 	ms      chan int
 	ct      <-chan time.Time
@@ -12,12 +12,12 @@ type Spacing struct {
 	fun     func()
 }
 
-// 固定秒间隔
+// NewSpacing create a fixed interval
 func NewSpacing(d time.Duration, fun func()) *Spacing {
 	return NewSpacingPeriodic(PeriodicIntervalCount(time.Now(), d, -1), fun)
 }
 
-// 根据函数计算间隔时间
+// NewSpacingPeriodic create a compute interval
 func NewSpacingPeriodic(perfunc func() time.Time, fun func()) *Spacing {
 	s := &Spacing{
 		ms:      make(chan int, 1),
@@ -38,7 +38,7 @@ func (s *Spacing) getAfter() <-chan time.Time {
 	return time.After(x)
 }
 
-// 开关
+// On is trying to perform
 func (s *Spacing) On() {
 	select {
 	case <-s.ct:

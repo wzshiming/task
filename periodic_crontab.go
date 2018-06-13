@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// Crontab 风格的定时字符串
+// PeriodicCrontab
 // six columns mean：
 //       second：0-59
 //       minute：0-59

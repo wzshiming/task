@@ -6,27 +6,27 @@ import (
 	"github.com/wzshiming/llrb"
 )
 
-// 任务队列
+// list is an LLRB simulation of the table.
 type list struct {
 	l   *llrb.LLRB
 	mut sync.RWMutex
 }
 
-// 新的任务队列
+// NewList is create a new list.
 func NewList() *list {
 	return &list{
 		l: llrb.New(),
 	}
 }
 
-// 插入并排序
+// InsertAndSort is insert and sort.
 func (qu *list) InsertAndSort(n *Node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
 	qu.l.InsertNoReplace(n)
 }
 
-// 删除最小的
+// DeleteMin is delete min node and returns it
 func (qu *list) DeleteMin() (n *Node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
@@ -36,7 +36,7 @@ func (qu *list) DeleteMin() (n *Node) {
 	return n
 }
 
-// 删除某个节点
+// DeleteMin is delete the node and returns it
 func (qu *list) Delete(n *Node) *Node {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()
@@ -44,7 +44,7 @@ func (qu *list) Delete(n *Node) *Node {
 	return b
 }
 
-// 获取最小的
+// Min returns min node
 func (qu *list) Min() *Node {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
@@ -52,14 +52,14 @@ func (qu *list) Min() *Node {
 	return b
 }
 
-// 长度
+// Len returns the list length
 func (qu *list) Len() int {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
 	return qu.l.Len()
 }
 
-// 节点列表
+// List returns the list all node
 func (qu *list) List() []*Node {
 	qu.mut.RLock()
 	defer qu.mut.RUnlock()
