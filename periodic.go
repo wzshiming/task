@@ -51,7 +51,7 @@ func parseTimeDay(tim string) time.Time {
 //   15:04:05 of 15:04:05.999999999 This time of day
 //   2006-01-02 15:04:05.999999999 This time of day from a certain date
 func PeriodicEveryDay(tim string) func() time.Time {
-	t := ParseTimeDay(tim)
+	t := parseTimeDay(tim)
 	if t == TaskExit {
 		return nil
 	}
