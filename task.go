@@ -52,8 +52,12 @@ func (t *Task) Cancel(n *Node) {
 
 // CancelAll Cancel all tasks
 func (t *Task) CancelAll() {
-	t.flash()
-	t.queue = NewList()
+	t.add(&Node{
+		time: time.Unix(0, 0),
+		task: func() {
+			t.queue = NewList()
+		},
+	})
 }
 
 // add
