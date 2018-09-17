@@ -3,14 +3,12 @@ package task
 import (
 	"testing"
 	"time"
-
-	"gopkg.in/ffmt.v1"
 )
 
 func TestSpacing(t *testing.T) {
 	ta := NewTask(1)
 	sp := NewSpacing(time.Second, func() {
-		ffmt.Mark(time.Now())
+		t.Log(time.Now())
 	})
 
 	for i := 0; i != 100; i++ {

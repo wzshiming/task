@@ -12,7 +12,6 @@ func TestA(t *testing.T) {
 	lll := 10000
 	ccc := make(chan bool, lll)
 	for i := 0; i != lll; i++ {
-		//go func() {
 		v := rand.Int()%1000 + 1
 		d := time.Millisecond * time.Duration(v)
 
@@ -20,9 +19,8 @@ func TestA(t *testing.T) {
 			fmt.Println("hello", d, Default.Len())
 			ccc <- true
 		})
-		//}()
 	}
-
+	Print()
 	Join()
 }
 
@@ -31,8 +29,10 @@ func TestB(t *testing.T) {
 	AddPeriodic(PeriodicIntervalCount(time.Now(), time.Second/10, 50), func() {
 		fmt.Println("fork", time.Now(), Default.Len())
 	})
+	Print()
 	Join()
 }
+
 
 func TestC(t *testing.T) {
 	fmt.Println("begin", time.Now())
@@ -43,6 +43,7 @@ func TestC(t *testing.T) {
 		Cancel(n)
 		fmt.Println("close", time.Now())
 	})
+	Print()
 	Join()
 	fmt.Println("begin", time.Now())
 	n = AddPeriodic(PeriodicIntervalCount(time.Now(), time.Second, 5), func() {
@@ -52,6 +53,7 @@ func TestC(t *testing.T) {
 		Cancel(n)
 		fmt.Println("close", time.Now(), Default.Len())
 	})
+	Print()
 	Join()
 }
 
@@ -60,5 +62,6 @@ func TestD(t *testing.T) {
 	AddPeriodic(PeriodicTiming(time.Now().Add(time.Second), time.Now()), func() {
 		fmt.Println("fork", time.Now())
 	})
+	Print()
 	Join()
 }

@@ -7,12 +7,17 @@ import (
 	"github.com/wzshiming/fork"
 )
 
-var TaskExit = time.Time{} // exit time
+// TaskExit exit time
+var TaskExit = time.Time{}
 
+// unix 0
 var unix0 = time.Date(1970, 1, 1, 0, 0, 0, 0, time.Local) // unix 0
 
-var none = struct{}{} // signal
+// signal
+var none = struct{}{}
 
+
+// Task defined task sets
 type Task struct {
 	fork  *fork.Fork    // maximum thread control
 	queue *list         // task queue
@@ -40,7 +45,7 @@ func (t *Task) Join() {
 	t.fork.Join()
 }
 
-// Cancel
+// Cancel the task for this node
 func (t *Task) Cancel(n *Node) {
 	t.add(&Node{
 		time: time.Unix(0, 0),

@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// PeriodicCrontab
+// PeriodicCrontab this is a crontab style timer
 // six columns mean：
 //       second：0-59
 //       minute：0-59
@@ -16,7 +16,6 @@ import (
 //       day：1-31
 //       month：1-12
 //       week：0-6（0 means Sunday）
-
 // SetCron some signals：
 //       *： any time
 //       ,：　 separate signal
