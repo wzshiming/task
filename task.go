@@ -65,7 +65,7 @@ func (t *Task) add(n *Node) *Node {
 
 	t.queue.InsertAndSort(n)
 
-	if t.queue.Min() == n { // Refresh time if the first one is inserted
+	if t.queue.Min() == n && n.time.Before(time.Now()) { // Refresh time if the first one is inserted
 		t.flash()
 	}
 
