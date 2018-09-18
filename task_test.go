@@ -33,7 +33,6 @@ func TestB(t *testing.T) {
 	Join()
 }
 
-
 func TestC(t *testing.T) {
 	fmt.Println("begin", time.Now())
 	n := AddPeriodic(PeriodicIntervalCount(time.Now(), time.Second, 5), func() {

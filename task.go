@@ -16,7 +16,6 @@ var unix0 = time.Date(1970, 1, 1, 0, 0, 0, 0, time.Local) // unix 0
 // signal
 var none = struct{}{}
 
-
 // Task defined task sets
 type Task struct {
 	fork  *fork.Fork    // maximum thread control
@@ -34,7 +33,7 @@ func NewTask(i int) *Task {
 	i++
 	return &Task{
 		fork:  fork.NewFork(i),
-		queue: NewList(),
+		queue: newList(),
 		ins:   make(chan struct{}, 1),
 		iru:   make(chan struct{}, 1),
 	}
@@ -60,7 +59,7 @@ func (t *Task) CancelAll() {
 	t.add(&Node{
 		time: time.Unix(0, 0),
 		task: func() {
-			t.queue = NewList()
+			t.queue = newList()
 		},
 	})
 }

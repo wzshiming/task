@@ -6,20 +6,20 @@ import (
 	"github.com/wzshiming/llrb"
 )
 
-// list is an LLRB simulation of the table.
+// list is an LLRB simulation of the table
 type list struct {
 	l   *llrb.LLRB
 	mut sync.RWMutex
 }
 
-// NewList is create a new list.
-func NewList() *list {
+// newList is create a new list
+func newList() *list {
 	return &list{
 		l: llrb.New(),
 	}
 }
 
-// InsertAndSort is insert and sort.
+// InsertAndSort is insert and sort
 func (qu *list) InsertAndSort(n *Node) {
 	qu.mut.Lock()
 	defer qu.mut.Unlock()

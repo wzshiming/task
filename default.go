@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// Default
+// Default task instance
 var Default = NewTask(runtime.NumCPU() + 2)
 
 // Add The specified time to execute
@@ -18,9 +18,14 @@ func AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
 	return Default.AddPeriodic(perfunc, task)
 }
 
-// Cancel
+// Cancel the task for this node
 func Cancel(n *Node) {
 	Default.Cancel(n)
+}
+
+// CancelAll Cancel all tasks
+func CancelAll() {
+	Default.CancelAll()
 }
 
 // Join Waiting for all tasks to finish
@@ -28,17 +33,17 @@ func Join() {
 	Default.Join()
 }
 
-// Len
+// Len returns the number of task
 func Len() int {
 	return Default.Len()
 }
 
-// List
+// List returns task list
 func List() []*Node {
 	return Default.List()
 }
 
-// Print
+// Print task list
 func Print() {
 	Default.Print()
 }

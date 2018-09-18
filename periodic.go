@@ -58,19 +58,19 @@ func PeriodicEveryDay(tim string) func() time.Time {
 	return PeriodicIntervalCount(t, time.Hour*24, -1)
 }
 
-// TimeSlice sorted from near to far
-type TimeSlice []time.Time
+// timeSlice sorted from near to far
+type timeSlice []time.Time
 
-func (p TimeSlice) Len() int           { return len(p) }
-func (p TimeSlice) Less(i, j int) bool { return p[i].Before(p[j]) }
-func (p TimeSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p TimeSlice) Sort()              { sort.Sort(p) }
+func (p timeSlice) Len() int           { return len(p) }
+func (p timeSlice) Less(i, j int) bool { return p[i].Before(p[j]) }
+func (p timeSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p timeSlice) Sort()              { sort.Sort(p) }
 
 // PeriodicTiming is multiple time for execution
 func PeriodicTiming(ts ...time.Time) func() time.Time {
 	now := time.Now()
 	// sorted from near to far
-	TimeSlice(ts).Sort()
+	timeSlice(ts).Sort()
 	// remove time that has expired
 	for _, v := range ts {
 		if !v.Before(now) {
