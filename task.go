@@ -181,6 +181,6 @@ func (t *Task) List() []*Node {
 // Print task list
 func (t *Task) Print() {
 	for _, v := range t.List() {
-		fmt.Printf(v.String())
+		fmt.Println(v)
 	}
 }

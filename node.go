@@ -1,7 +1,7 @@
 package task
 
 import (
-	"fmt"
+	"strings"
 	"time"
 
 	"github.com/wzshiming/llrb"
@@ -16,7 +16,7 @@ type Node struct {
 
 // String returns strings
 func (no *Node) String() string {
-	return fmt.Sprintf("%v %v", no.time, no.name)
+	return strings.Join([]string{no.time.Format(time.RFC3339), no.name}, " ")
 }
 
 // Func returns tasks function
