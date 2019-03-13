@@ -6,6 +6,48 @@ import (
 	"time"
 )
 
+func PeriodicMerge(fs ...func() time.Time) func() time.Time {
+	switch len(fs) {
+	case 0:
+		return func() time.Time {
+			return TaskExit
+		}
+	case 1:
+		return fs[0]
+	default:
+		pending := make([]time.Time, len(fs))
+		for i, f := range fs {
+			pending[i] = f()
+		}
+		return func() time.Time {
+			min := time.Time{}
+			index := -1
+			for i, v := range pending {
+				if v == TaskExit {
+					continue
+				}
+				if min == (time.Time{}) || v.Before(min) {
+					min = v
+					index = i
+				}
+			}
+			if index == -1 {
+				return TaskExit
+			}
+			for i, v := range pending {
+				if v == TaskExit {
+					continue
+				}
+
+				if v.Equal(min) {
+					pending[i] = fs[i]()
+				}
+			}
+			return min
+		}
+	}
+}
+
 // PeriodicIntervalCount is generates a fixed interval time function
 func PeriodicIntervalCount(start time.Time, interval time.Duration, count int) func() time.Time {
 	// If the start time is not initialized, it is set to standard zero
