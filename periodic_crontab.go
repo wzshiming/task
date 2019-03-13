@@ -187,9 +187,6 @@ WRAP:
 }
 
 func parse(spec string) *Schedule {
-	if len(spec) > 0 && spec[0] == '@' {
-		return parseSpec(spec)
-	}
 	// Split on whitespace.  We require 5 or 6 fields.
 	// (second) (minute) (hour) (day of month) (month) (day of week, optional)
 	fields := strings.Fields(spec)
@@ -224,61 +221,6 @@ func dayMatches(s *Schedule, t time.Time) bool {
 		return domMatch && dowMatch
 	}
 	return domMatch || dowMatch
-}
-
-func parseSpec(spec string) *Schedule {
-	switch spec {
-	case "@yearly", "@annually":
-		return &Schedule{
-			Second: 1 << seconds.min,
-			Minute: 1 << minutes.min,
-			Hour:   1 << hours.min,
-			Day:    1 << days.min,
-			Month:  1 << months.min,
-			Week:   all(weeks),
-		}
-
-	case "@monthly":
-		return &Schedule{
-			Second: 1 << seconds.min,
-			Minute: 1 << minutes.min,
-			Hour:   1 << hours.min,
-			Day:    1 << days.min,
-			Month:  all(months),
-			Week:   all(weeks),
-		}
-
-	case "@weekly":
-		return &Schedule{
-			Second: 1 << seconds.min,
-			Minute: 1 << minutes.min,
-			Hour:   1 << hours.min,
-			Day:    all(days),
-			Month:  all(months),
-			Week:   1 << weeks.min,
-		}
-
-	case "@daily", "@midnight":
-		return &Schedule{
-			Second: 1 << seconds.min,
-			Minute: 1 << minutes.min,
-			Hour:   1 << hours.min,
-			Day:    all(days),
-			Month:  all(months),
-			Week:   all(weeks),
-		}
-
-	case "@hourly":
-		return &Schedule{
-			Second: 1 << seconds.min,
-			Minute: 1 << minutes.min,
-			Hour:   all(hours),
-			Day:    all(days),
-			Month:  all(months),
-			Week:   all(weeks),
-		}
-	}
-	return nil
 }
 
 func getField(field string, r bounds) uint64 {
