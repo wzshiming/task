@@ -45,23 +45,23 @@ func (t *Task) Join() {
 }
 
 // Cancel the task for this node
-func (t *Task) Cancel(n *Node) {
-	t.add(&Node{
-		time: time.Unix(0, 0),
-		task: func() {
-			t.queue.Delete(n)
-		},
-	})
+func (t *Task) Cancel(cn *Node) {
+	n := &Node{}
+	n.time = time.Unix(0, 0)
+	n.task = func() {
+		t.queue.Delete(cn)
+	}
+	t.add(n)
 }
 
 // CancelAll Cancel all tasks
 func (t *Task) CancelAll() {
-	t.add(&Node{
-		time: time.Unix(0, 0),
-		task: func() {
-			t.queue = newList()
-		},
-	})
+	n := &Node{}
+	n.time = time.Unix(0, 0)
+	n.task = func() {
+		t.queue = newList()
+	}
+	t.add(n)
 }
 
 // add
@@ -138,24 +138,27 @@ func (t *Task) unflash() {
 func (t *Task) run() {
 	timer := time.NewTimer(time.Hour)
 	for {
-		t.curr = t.queue.DeleteMin()
-		if t.curr == nil { // End the thread if there are no tasks
+		curr := t.queue.DeleteMin()
+		if curr == nil { // End the thread if there are no tasks
 			if t.Len() == 0 {
 				break
 			}
 			continue
 		}
-		sub := t.curr.time.Sub(time.Now()) // Calculate sleep duration
-		if sub <= 0 {                      // immediate
-			t.curr.task()
+		sub := curr.time.Sub(time.Now()) // Calculate sleep duration
+		if sub <= 0 {                    // immediate
+			curr.task()
 			continue
 		}
 		timer.Reset(sub) // Reset timer
+		t.curr = curr
 		select {
 		case <-t.ins: // A new task node is inserted
-			t.queue.InsertAndSort(t.curr)
+			t.curr = nil
+			t.queue.InsertAndSort(curr)
 		case <-timer.C: // Arrive at the recently executed task
-			t.curr.task()
+			t.curr = nil
+			curr.task()
 			t.unflash()
 		}
 	}
