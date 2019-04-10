@@ -66,10 +66,12 @@ func (t *Task) CancelAll() {
 
 // add
 func (t *Task) add(n *Node) *Node {
-
+	now := time.Now()
 	t.queue.InsertAndSort(n)
 
-	if t.queue.Min() == n && n.time.Before(time.Now()) { // Refresh time if the first one is inserted
+	if curr := t.curr; curr != nil && n.time.Before(curr.time) {
+		t.flash()
+	} else if n.time.Before(now) { // Refresh time if the first one is inserted
 		t.flash()
 	}
 
