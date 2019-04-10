@@ -64,3 +64,20 @@ func TestD(t *testing.T) {
 	Print()
 	Join()
 }
+
+func TestE(t *testing.T) {
+
+	i := 0
+
+	now := time.Now()
+	now = time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), 0, now.Location())
+	AddPeriodic(PeriodicIntervalCount(now, time.Second*3, 3), func() {
+		i++
+		fmt.Println("fork", List())
+		AddPeriodic(PeriodicIntervalCount(time.Now(), time.Second, 20), func() {
+			fmt.Println("fork", List())
+		}).SetName("Fork" + fmt.Sprint(i))
+	}).SetName("Main")
+
+	Join()
+}
