@@ -11,7 +11,7 @@ import (
 var TaskExit = time.Time{}
 
 // unix 0
-var unix0 = time.Date(1970, 1, 1, 0, 0, 0, 0, time.Local) // unix 0
+var unix0 = time.Unix(0, 0) // unix 0
 
 // signal
 var none = struct{}{}
@@ -83,13 +83,13 @@ func (t *Task) add(n *Node) *Node {
 
 // Add The specified time to execute
 func (t *Task) Add(tim time.Time, task func()) *Node {
-	return t.add(&Node{
-		time: tim,
-		task: func() {
-			t.fork.Push(task)
-		},
-		name: time.Now().Format(time.RFC3339),
-	})
+	n := &Node{}
+	n.time = tim
+	n.task = func() {
+		t.fork.Push(task)
+	}
+	n.name = time.Now().Format(time.RFC3339)
+	return t.add(n)
 }
 
 // addPeriodic
@@ -106,14 +106,13 @@ func (t *Task) addPeriodic(perfunc func() time.Time, n *Node) *Node {
 }
 
 // AddPeriodic Periodic execution
-func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) (n *Node) {
-	n = &Node{
-		task: func() {
-			t.addPeriodic(perfunc, n)
-			t.fork.Push(task)
-		},
-		name: time.Now().Format(time.RFC3339),
+func (t *Task) AddPeriodic(perfunc func() time.Time, task func()) *Node {
+	n := &Node{}
+	n.task = func() {
+		t.addPeriodic(perfunc, n)
+		t.fork.Push(task)
 	}
+	n.name = time.Now().Format(time.RFC3339)
 	return t.addPeriodic(perfunc, n)
 }
 

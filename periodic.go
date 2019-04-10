@@ -52,7 +52,7 @@ func PeriodicMerge(fs ...func() time.Time) func() time.Time {
 func PeriodicIntervalCount(start time.Time, interval time.Duration, count int) func() time.Time {
 	// If the start time is not initialized, it is set to standard zero
 	if start.IsZero() {
-		start = time.Unix(0, 0)
+		start = unix0
 	}
 	return func() time.Time {
 		now := time.Now()
