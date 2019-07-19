@@ -182,6 +182,19 @@ func (t *Task) List() []*Node {
 	return t.queue.List()
 }
 
+// First returns first on the list
+func (t *Task) First() *Node {
+	if t.curr != nil {
+		return t.curr
+	}
+	return t.queue.Min()
+}
+
+// Last returns last on the list
+func (t *Task) Last() *Node {
+	return t.queue.Max()
+}
+
 // Print task list
 func (t *Task) Print() {
 	for _, v := range t.List() {

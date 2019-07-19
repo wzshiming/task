@@ -52,6 +52,14 @@ func (qu *list) Min() *Node {
 	return b
 }
 
+// Max returns max node
+func (qu *list) Max() *Node {
+	qu.mut.RLock()
+	defer qu.mut.RUnlock()
+	b, _ := qu.l.Max().(*Node)
+	return b
+}
+
 // Len returns the list length
 func (qu *list) Len() int {
 	qu.mut.RLock()
