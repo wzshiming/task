@@ -1,4 +1,4 @@
-module github.com/wzshiming/task
+module github.com/wzshiming/task/v2
 
 go 1.12
 
